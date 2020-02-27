@@ -1,3 +1,13 @@
 from django.shortcuts import render
+from django.views import generic
 
-# Create your views here.
+from .models import Game
+
+class IndexView(generic.ListView):
+    template_name = 'scores/index.html'
+
+    def get_queryset(self):
+        """
+        Return all games
+        """
+        return Game.objects.all

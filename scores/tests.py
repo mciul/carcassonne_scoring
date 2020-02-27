@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.urls import reverse
 
 from .models import Player, Score, Game, Turn, GamePlayer
 
@@ -42,7 +43,7 @@ class GameModelTests(TestCase):
         gp2 = GamePlayer(game=g, order=2, player=p2)
         gp2.save()
         self.assertEqual(g.player_order(), [p0, p1, p2])
-    
+
 class TurnModelTests(TestCase):
     def test_turn_number(self):
         t = Turn(number=1)
@@ -52,3 +53,8 @@ class GamePlayerTests(TestCase):
     def test_game_player_order(self):
         gp = GamePlayer(order=3)
         self.assertIs(gp.order, 3)
+
+class IndexViewTests(TestCase):
+    def test_index_exists(self):
+        response = self.client.get(reverse('scores:index'))
+        self.assertEqual(response.status_code, 200)
