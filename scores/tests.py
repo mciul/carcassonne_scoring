@@ -58,3 +58,13 @@ class IndexViewTests(TestCase):
     def test_index_exists(self):
         response = self.client.get(reverse('scores:index'))
         self.assertEqual(response.status_code, 200)
+
+    def test_index_with_no_games(self):
+        response = self.client.get(reverse('scores:index'))
+        self.assertContains(response, 'No games are recorded')
+
+    def test_index_with_a_game(self):
+        g = Game(name="Family Night")
+        g.save()
+        response = self.client.get(reverse('scores:index'))
+        self.assertContains(response, 'Family Night')

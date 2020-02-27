@@ -10,7 +10,7 @@ class Score(models.Model):
 
 class Game(models.Model):
     name = models.CharField(max_length=200)
-    scores = models.ManyToManyField(Score)
+    scores = models.ManyToManyField(Score, blank=True)
 
     def player_order(self):
         gps = self.gameplayer_set.order_by('order')

@@ -10,4 +10,8 @@ class IndexView(generic.ListView):
         """
         Return all games
         """
-        return Game.objects.all
+        return Game.objects.all()
+
+
+class GameView(generic.DetailView):
+    template_name = 'scores/game.html'

@@ -1,6 +1,18 @@
 <html>
   <head></head>
   <body>
-    This is the main index.
+    {% if game_list %}
+    <ul>
+      {% for game in game_list %}
+      <li>
+        <a href="{% url 'scores:game' game.id  %}">
+          {{ game.name }}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+      No games are recorded.
+    {% endif %}
   </body>
 </html>
