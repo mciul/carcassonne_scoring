@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import generic
 
-from .models import Game
+from .models import Game, Player
 
 class IndexView(generic.ListView):
     template_name = 'scores/index.html'
@@ -16,4 +16,13 @@ class IndexView(generic.ListView):
 class GameView(generic.DetailView):
     model = Game
     template_name = 'scores/game.html'
+
+class PlayerListView(generic.ListView):
+    template_name = 'scores/player_list.html'
+
+    def get_queryset(self):
+        """
+        Return all players
+        """
+        return Player.objects.all()
 
