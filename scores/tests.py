@@ -1,3 +1,8 @@
 from django.test import TestCase
 
-# Create your tests here.
+from .models import Player
+
+class PlayerModelTests(TestCase):
+    def test_player_name(self):
+        p = Player(name="Wil")
+        self.assertIs(p.name, "Wil")
