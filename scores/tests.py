@@ -68,3 +68,10 @@ class IndexViewTests(TestCase):
         g.save()
         response = self.client.get(reverse('scores:index'))
         self.assertContains(response, 'Family Night')
+
+class GameVietTests(TestCase):
+    def test_game_detail_exists(self):
+        g = Game(name='Family Night')
+        g.save()
+        response = self.client.get(reverse("scores:game", args=(g.id,)))
+        self.assertEqual(response.status_code, 200)

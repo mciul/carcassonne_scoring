@@ -14,4 +14,6 @@ class IndexView(generic.ListView):
 
 
 class GameView(generic.DetailView):
+    model = Game
     template_name = 'scores/game.html'
+
