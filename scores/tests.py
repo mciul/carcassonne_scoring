@@ -76,7 +76,7 @@ class GameViewTests(TestCase):
         response = self.client.get(reverse("scores:game", args=(g.id,)))
         self.assertEqual(response.status_code, 200)
 
-class PlayerListTests(TestCase):
+class PlayerListViewTests(TestCase):
     def test_player_list_exists(self):
         response = self.client.get(reverse("scores:player_list"))
         self.assertEqual(response.status_code, 200)
