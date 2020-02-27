@@ -26,3 +26,6 @@ class PlayerListView(generic.ListView):
         """
         return Player.objects.all()
 
+class PlayerView(generic.DetailView):
+    model = Player
+    template_name = 'scores/player.html'

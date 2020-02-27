@@ -80,3 +80,10 @@ class PlayerListViewTests(TestCase):
     def test_player_list_exists(self):
         response = self.client.get(reverse("scores:player_list"))
         self.assertEqual(response.status_code, 200)
+
+class PlayerViewTests(TestCase):
+    def test_player_view_exists(self):
+        p = Player(name='Seth')
+        p.save()
+        response = self.client.get(reverse("scores:player", args=(p.id,)))
+        self.assertEqual(response.status_code, 200)
