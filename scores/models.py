@@ -12,6 +12,10 @@ class Game(models.Model):
     name = models.CharField(max_length=200)
     scores = models.ManyToManyField(Score)
 
+    def player_order(self):
+        gps = self.gameplayer_set.order_by('order')
+        return [ gp.player for gp in gps ]
+
 class Turn(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
