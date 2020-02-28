@@ -118,7 +118,7 @@ class StartGameFormTests(TestCase):
         self.assertTrue(form.is_valid())
 
 class CreateGameTests(TestCase):
-    def test_create_two_player_game_redirects_to_detail(self):
+    def test_create_two_player_game_redirects(self):
         stan = Player(name='Stan')
         stan.save()
         oliver = Player(name='Oliver')
