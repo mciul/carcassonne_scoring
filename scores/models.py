@@ -28,6 +28,10 @@ class Game(models.Model):
 
     def current_player(self):
         players = self.player_order()
+        player_count = len(players)
+        turn = self.turn_number()
+        print("current_player: players=%s, length=%d, turn=%d" % (players,
+            len(players), turn))
         return players[self.turn_number() % len(players)]
 
     def add_player(self, player_id):

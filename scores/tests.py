@@ -49,6 +49,17 @@ class GameModelTests(TestCase):
         gp2.save()
         self.assertEqual(g.player_order(), [p0, p1, p2])
 
+    def test_game_player_order_with_one_player(self):
+        # this could arguably raise an error since one-player games
+        # technically aren't allowed. But for now, I'll leave
+        # it as a TODO
+        g = Game(name='test')
+        g.save()
+        p0 = Player(name='Trisha')
+        p0.save()
+        g.add_player(p0.pk)
+        self.assertEqual(len(g.player_order()), 1)
+
     def test_turn_number_is_zero_with_no_turns(self):
         g = Game(name='test')
         self.assertEqual(g.turn_number(), 0)
@@ -121,6 +132,9 @@ class GameViewTests(TestCase):
     def test_game_detail_exists(self):
         g = Game(name='Family Night')
         g.save()
+        p = Player(name='Homer')
+        p.save()
+        g.add_player(p.pk)
         response = self.client.get(reverse("scores:game", args=(g.id,)))
         self.assertEqual(response.status_code, 200)
 
@@ -150,6 +164,15 @@ class GameViewTests(TestCase):
         t = g.turn_set.create(number=41, player=p)
         response = self.client.get(reverse("scores:game", args=(g.pk,)))
         self.assertContains(response, "Turn 42")
+
+    def test_game_detail_shows_current_player(self):
+        g = Game(name='test')
+        g.save()
+        p = Player(name='Arthur')
+        p.save()
+        g.add_player(p.pk)
+        response = self.client.get(reverse("scores:game", args=(g.pk,)))
+        self.assertContains(response, "Arthur's turn")
 
 class PlayerListViewTests(TestCase):
     def test_player_list_exists(self):
