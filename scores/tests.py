@@ -323,3 +323,23 @@ class CreateGameTests(TestCase):
         game = Game.objects.get(name='Comedy Night')
         players = game.player_order()
         self.assertEqual(players, [stan, oliver])
+
+    def test_create_game_with_turn_number_zero(self):
+        stan = Player(name='Stan')
+        stan.save()
+        oliver = Player(name='Oliver')
+        oliver.save()
+        response = self.client.post(
+            reverse('scores:create_game'),
+            data={
+                'name': 'Comedy Night',
+                'player0': str(stan.pk),
+                'player1': str(oliver.pk),
+                'player2': '',
+                'player3': '',
+                'player4': '',
+            }
+        )
+        game = Game.objects.get(name='Comedy Night')
+        self.assertEqual(game.turn_number(), 0)
+

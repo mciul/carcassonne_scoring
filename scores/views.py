@@ -47,6 +47,7 @@ def create_game(request):
             gp = GamePlayer(player_id=player_id, game_id=game.pk, order=i)
             gp.save()
             #TODO: handle invalid player id
+    game.add_turn()
     return HttpResponseRedirect(reverse('scores:game', args={game.pk}))
 
 class NewGameView(generic.FormView):
