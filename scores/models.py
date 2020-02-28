@@ -57,6 +57,38 @@ class Game(models.Model):
         #TODO: handle the case when there are no turns
         return self.turn_set.order_by('number').reverse()[0]
 
+    def score_completed_monastery(self, player_id):
+        #TODO: handle the case when there are no turns here too?
+        return self.current_turn().scores.create(
+            event='monastery',
+            player_id=player_id,
+            points=9
+        )
+
+    def score_completed_road(self, player_id, tiles):
+        return self.current_turn().scores.create(
+            event='road',
+            player_id=player_id,
+            points=int(tiles)
+        )
+
+    def score_completed_city(self, player_id, tiles, coats_of_arms):
+        return self.current_turn().scores.create(
+            event='city',
+            player_id=player_id,
+            points=(int(tiles) + int(coats_of_arms))*2
+        )
+
+    def total_scores(self):
+        return [ [p, self.total_score(p)] for p in self.player_order() ]
+
+    def total_score(self, player):
+        total = 0
+        for t in self.turn_set.all():
+            for s in t.scores.filter(player_id = player.pk):
+                total += s.points
+        return total
+
 class Turn(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)

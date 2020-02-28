@@ -162,7 +162,77 @@ class GameModelTests(TestCase):
         g.add_turn()
         self.assertEqual(g.next_player(), p2)
 
+    def test_total_scores_zero_at_start(self):
+        g = Game(name='x')
+        g.save()
+        p1 = Player(name='Scott')
+        p1.save()
+        g.add_player(p1.pk)
+        p2 = Player(name='Jean')
+        p2.save()
+        g.add_player(p2.pk)
+        p3 = Player(name='Charles')
+        p3.save()
+        g.add_player(p3.pk)
+        g.add_turn()
+        expected = [[p1, 0], [p2, 0], [p3, 0]]
+        self.assertEqual(g.total_scores(), expected)
+
+    def test_score_completed_monastery_creates_nine_point_score(self):
+        g = Game(name='x')
+        g.save()
+        p1 = Player(name='Scott')
+        p1.save()
+        g.add_player(p1.pk)
+        t = g.add_turn()
+        g.score_completed_monastery(p1.pk)
+        s = t.scores.get(player_id=p1.pk)
+        self.assertEqual(s.points, 9)
+
+    def test_score_completed_road_creates_score(self):
+        g = Game(name='x')
+        g.save()
+        p1 = Player(name='Jean')
+        p1.save()
+        g.add_player(p1.pk)
+        t = g.add_turn()
+        g.score_completed_road(p1.pk, 4)
+        s = t.scores.get(player_id=p1.pk)
+        self.assertEqual(s.points, 4)
+
+    def test_score_completed_city_creates_score(self):
+        g = Game(name='x')
+        g.save()
+        p1 = Player(name='Charles')
+        p1.save()
+        g.add_player(p1.pk)
+        t = g.add_turn()
+        g.score_completed_city(p1.pk, 4, 1)
+        s = t.scores.get(player_id=p1.pk)
+        self.assertEqual(s.points, 10)
+
+    def test_total_scores_after_one_turn(self):
+        g = Game(name='x')
+        g.save()
+        p1 = Player(name='Scott')
+        p1.save()
+        g.add_player(p1.pk)
+        p2 = Player(name='Jean')
+        p2.save()
+        g.add_player(p2.pk)
+        p3 = Player(name='Charles')
+        p3.save()
+        g.add_player(p3.pk)
+        g.add_turn()
+        g.score_completed_monastery(p1.pk)
+        g.score_completed_city(p2.pk, 5, 2)
+        g.score_completed_road(p3.pk, 11)
+        expected = [[p1, 9], [p2, 14], [p3, 11]]
+        self.assertEqual(g.total_scores(), expected)
+
+
 class TurnModelTests(TestCase):
+
     def test_turn_number(self):
         t = Turn(number=1)
         self.assertIs(t.number, 1)
