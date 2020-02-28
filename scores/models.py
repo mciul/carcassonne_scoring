@@ -20,7 +20,20 @@ class Game(models.Model):
         return [ gp.player for gp in gps ]
 
     def turn_number(self):
-        return 0
+        turns = self.turn_set.order_by('number')
+        if len(turns) == 0:
+            return 0
+        else:
+            return turns.reverse()[0].number + 1
+
+    def add_player(self, player_id):
+        player_count = GamePlayer.objects.filter(game_id = self.pk).count()
+        gp = GamePlayer(
+            game_id=self.pk,
+            player_id=player_id,
+            order=player_count + 1
+        )
+        gp.save()
 
 class Turn(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)

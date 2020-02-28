@@ -53,6 +53,15 @@ class GameModelTests(TestCase):
         g = Game(name='test')
         self.assertEqual(g.turn_number(), 0)
 
+    def test_turn_number_is_last_turn_number_plus_one(self):
+        g = Game(name='test')
+        g.save()
+        p = Player(name='Winston')
+        p.save()
+        g.add_player(p.pk)
+        t = g.turn_set.create(number=41, player=p)
+        self.assertEqual(g.turn_number(), 42)
+
 class TurnModelTests(TestCase):
     def test_turn_number(self):
         t = Turn(number=1)
