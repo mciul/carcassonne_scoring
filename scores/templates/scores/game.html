@@ -7,39 +7,42 @@
     {% for p, s in game.total_scores %}
     <p>{{ p.name }}: {{ s }}</p>
     {% endfor %}
-    <h2>Turn {{ game.turn_number }} - {{ game.current_player }}'s turn</h2>
+    {% if game.is_ended %}
+    {% else %}
+      <h2>Turn {{ game.turn_number }} - {{ game.current_player }}'s turn</h2>
 
-    <h3>Add A Score</h3>
-    <form method="post" action="{% url 'scores:add_turn_score' game.id %}">
-      {% csrf_token %}
-      <p>
-        <label for="id_scoring_player">Scoring Player:</label>
-        <select name="player" required id="id_scoring_player">
-        {% for p in game.player_order %}
-          <option value="{{ p.pk }}">{{ p.name }}</option>
-        {% endfor %}
-        </select>
-      </p>
-      <input type="submit" name="add_monastery_score"
-                           value="Completed Monastery"/>
-      <p>
-        <label for="id_tiles">Tiles scored (for cities and roads)</label>
-        <input type="text" name="tiles" size="2" id="id_tiles" />
-      </p>
-      <input type="submit" name="add_road_score" value="Completed Road">
-      <p>
-        <label for="id_coa">Coats of arms scored (for cities)</label>
-        <input type="text" name="coats_of_arms" size="2" id="id_coa" />
-      </p>
-      <input type="submit" name="add_city_score" value="Completed City">
-    </form>
-    <form method="post" action="{% url 'scores:next_turn' game.id %}">
-      {% csrf_token %}
-      <input type="submit" value="Next Turn">
-    </form>
-    <form method="post" action="{% url 'scores:end_game' game.id %}">
-      {% csrf_token %}
-      <input type="submit" value="End Game">
-    </form>
+      <h3>Add A Score</h3>
+      <form method="post" action="{% url 'scores:add_turn_score' game.id %}">
+        {% csrf_token %}
+        <p>
+          <label for="id_scoring_player">Scoring Player:</label>
+          <select name="player" required id="id_scoring_player">
+          {% for p in game.player_order %}
+            <option value="{{ p.pk }}">{{ p.name }}</option>
+          {% endfor %}
+          </select>
+        </p>
+        <input type="submit" name="add_monastery_score"
+                            value="Completed Monastery"/>
+        <p>
+          <label for="id_tiles">Tiles scored (for cities and roads)</label>
+          <input type="text" name="tiles" size="2" id="id_tiles" />
+        </p>
+        <input type="submit" name="add_road_score" value="Completed Road">
+        <p>
+          <label for="id_coa">Coats of arms scored (for cities)</label>
+          <input type="text" name="coats_of_arms" size="2" id="id_coa" />
+        </p>
+        <input type="submit" name="add_city_score" value="Completed City">
+      </form>
+      <form method="post" action="{% url 'scores:next_turn' game.id %}">
+        {% csrf_token %}
+        <input type="submit" value="Next Turn">
+      </form>
+      <form method="post" action="{% url 'scores:end_game' game.id %}">
+        {% csrf_token %}
+        <input type="submit" value="End Game">
+      </form>
+    {% endif %}
   </body>
 </html>

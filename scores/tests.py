@@ -354,16 +354,59 @@ class GameViewTests(TestCase):
         response = self.client.get(reverse("scores:game", args=(g.pk,)))
         self.assertContains(response, "Arthur's turn")
 
-    def test_game_detail_has_next_turn_button(self):
+    def test_game_detail_has_next_turn_button_before_ending(self):
         g = Game(name='test')
         g.save()
         p = Player(name='Arthur')
         p.save()
         g.add_player(p.pk)
+        g.add_turn()
         response = self.client.get(reverse("scores:game", args=(g.pk,)))
         expected = '<input type="submit" value="Next Turn">'
         self.assertContains(response, expected, html=True)
 
+    def test_game_detail_has_no_next_turn_button_after_ending(self):
+        g = Game(name='test')
+        g.save()
+        p = Player(name='Arthur')
+        p.save()
+        g.add_player(p.pk)
+        g.add_turn()
+        g.ended = True
+        g.save()
+        response = self.client.get(reverse("scores:game", args=(g.pk,)))
+        expected = '<input type="submit" value="Next Turn">'
+        self.assertNotContains(response, expected, html=True)
+
+    def test_game_detail_has_add_score_form_before_ending(self):
+        g = Game(name='test')
+        g.save()
+        p = Player(name='Arthur')
+        p.save()
+        p2 = Player(name='Ben')
+        p2.save()
+        g.add_player(p.pk)
+        g.add_player(p2.pk)
+        g.add_turn()
+        response = self.client.get(reverse("scores:game", args=(g.pk,)))
+        expected = reverse('scores:add_turn_score', args=(g.pk,))
+        self.assertContains(response, expected)
+
+    def test_game_detail_has_no_add_score_form_after_ending(self):
+        g = Game(name='test')
+        g.save()
+        p = Player(name='Arthur')
+        p.save()
+        p2 = Player(name='Ben')
+        p2.save()
+        g.add_player(p.pk)
+        g.add_player(p2.pk)
+        g.add_turn()
+        g.ended = True
+        g.save()
+        response = self.client.get(reverse("scores:game", args=(g.pk,)))
+        expected = reverse('scores:add_turn_score', args=(g.pk,))
+        self.assertNotContains(response, expected)
 
 class PlayerListViewTests(TestCase):
     def test_player_list_exists(self):
