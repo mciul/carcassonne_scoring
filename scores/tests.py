@@ -111,6 +111,16 @@ class GameViewTests(TestCase):
         response = self.client.get(reverse("scores:game", args=(g.pk,)))
         self.assertContains(response, "John, Paul, George, Ringo")
 
+    def test_game_detail_shows_turn_number(self):
+        g = Game(name='test')
+        g.save()
+        p = Player(name='Arthur')
+        p.save()
+        g.add_player(p.pk)
+        t = g.turn_set.create(number=41, player=p)
+        response = self.client.get(reverse("scores:game", args=(g.pk,)))
+        self.assertContains(response, "Turn 42")
+
 class PlayerListViewTests(TestCase):
     def test_player_list_exists(self):
         response = self.client.get(reverse("scores:player_list"))
