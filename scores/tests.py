@@ -135,3 +135,23 @@ class CreateGameTests(TestCase):
             }
         )
         self.assertEqual(response.status_code, 302)
+
+    def test_create_two_player_game_redirects_to_detail(self):
+        stan = Player(name='Stan')
+        stan.save()
+        oliver = Player(name='Oliver')
+        oliver.save()
+        response = self.client.post(
+            reverse('scores:create_game'),
+            data={
+                'name': 'Comedy Night',
+                'player0': str(stan.pk),
+                'player1': str(oliver.pk),
+                'player2': '',
+                'player3': '',
+                'player4': '',
+            }
+        )
+        game = Game.objects.get(name='Comedy Night')
+        self.assertRedirects(response, reverse('scores:game', args={game.pk}))
+

@@ -35,7 +35,8 @@ class StartGameForm(forms.Form):
     #TODO: prevent duplicate players
 
 def create_game(request):
-    game = Game()
+    name = request.POST['name']
+    game = Game(name=name)
     game.save()
     return HttpResponseRedirect(reverse('scores:game', args={game.pk}))
 
