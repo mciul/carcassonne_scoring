@@ -115,5 +115,5 @@ class StartGameFormTests(TestCase):
             'player0': harold.pk,
             'player1': maude.pk,
         })
-        self.assertEqual(form.errors, {})
+        self.assertTrue(form.is_valid())
 
