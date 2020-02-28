@@ -8,6 +8,7 @@
     <p>{{ p.name }}: {{ s }}</p>
     {% endfor %}
     {% if game.is_ended %}
+      <h2>The game has ended.</h2>
     {% else %}
       <h2>Turn {{ game.turn_number }} - {{ game.current_player }}'s turn</h2>
 

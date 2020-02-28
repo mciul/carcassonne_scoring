@@ -383,10 +383,7 @@ class GameViewTests(TestCase):
         g.save()
         p = Player(name='Arthur')
         p.save()
-        p2 = Player(name='Ben')
-        p2.save()
         g.add_player(p.pk)
-        g.add_player(p2.pk)
         g.add_turn()
         response = self.client.get(reverse("scores:game", args=(g.pk,)))
         expected = reverse('scores:add_turn_score', args=(g.pk,))
@@ -397,16 +394,26 @@ class GameViewTests(TestCase):
         g.save()
         p = Player(name='Arthur')
         p.save()
-        p2 = Player(name='Ben')
-        p2.save()
         g.add_player(p.pk)
-        g.add_player(p2.pk)
         g.add_turn()
         g.ended = True
         g.save()
         response = self.client.get(reverse("scores:game", args=(g.pk,)))
         expected = reverse('scores:add_turn_score', args=(g.pk,))
         self.assertNotContains(response, expected)
+
+    def test_game_detail_reports_ending(self):
+        g = Game(name='test')
+        g.save()
+        p = Player(name='Arthur')
+        p.save()
+        g.add_player(p.pk)
+        g.add_turn()
+        g.ended = True
+        g.save()
+        response = self.client.get(reverse("scores:game", args=(g.pk,)))
+        expected = reverse('scores:add_turn_score', args=(g.pk,))
+        self.assertContains('The game has ended', expected)
 
 class PlayerListViewTests(TestCase):
     def test_player_list_exists(self):
