@@ -281,6 +281,31 @@ class GameModelTests(TestCase):
         expected = [[p1, 13], [p2, 14], [p3, 11]]
         self.assertEqual(g.total_scores(), expected)
 
+    def test_total_scores_after_two_turns_and_final(self):
+        g = Game(name='x')
+        g.save()
+        p1 = Player(name='Scott')
+        p1.save()
+        g.add_player(p1.pk)
+        p2 = Player(name='Jean')
+        p2.save()
+        g.add_player(p2.pk)
+        p3 = Player(name='Charles')
+        p3.save()
+        g.add_player(p3.pk)
+        g.add_turn()
+        g.score_completed_monastery(p1.pk)
+        g.score_completed_city(p2.pk, 5, 2)
+        g.score_completed_road(p3.pk, 11)
+        g.add_turn()
+        g.score_completed_road(p1.pk, 4)
+        g.ended = True
+        g.save()
+        g.score_incomplete_monastery(p2.pk, 3)
+        g.score_incomplete_city(p3.pk, 3, 1)
+        expected = [[p1, 13], [p2, 17], [p3, 15]]
+        self.assertEqual(g.total_scores(), expected)
+
     def test_is_ended_is_false_during_game(self):
         g = Game(name='x')
         g.save()

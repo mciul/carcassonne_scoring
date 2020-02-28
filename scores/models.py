@@ -112,6 +112,8 @@ class Game(models.Model):
         for t in self.turn_set.all():
             for s in t.scores.filter(player_id = player.pk):
                 total += s.points
+        for s in self.final_scores.filter(player_id = player.pk):
+            total += s.points
         return total
 
 class Turn(models.Model):
