@@ -76,6 +76,22 @@ class GameModelTests(TestCase):
         g.add_player(p3.pk)
         self.assertEqual(g.current_player(), p1)
 
+    def test_current_player_is_third_turn_five_three_players(self):
+        g = Game(name='x')
+        g.save()
+        p1 = Player(name='Scott')
+        p1.save()
+        g.add_player(p1.pk)
+        p2 = Player(name='Jean')
+        p2.save()
+        g.add_player(p2.pk)
+        p3 = Player(name='Charles')
+        p3.save()
+        g.add_player(p3.pk)
+        t = g.turn_set.create(number=4, player=p2)
+        self.assertEqual(g.current_player(), p3)
+
+
 class TurnModelTests(TestCase):
     def test_turn_number(self):
         t = Turn(number=1)
