@@ -5,7 +5,7 @@ from django.urls import reverse, reverse_lazy
 from django import forms
 from django.forms import ModelChoiceField
 
-from .models import Game, Player
+from .models import Game, Player, GamePlayer
 
 class IndexView(generic.ListView):
     template_name = 'scores/index.html'
@@ -39,6 +39,14 @@ def create_game(request):
     name = request.POST['name']
     game = Game(name=name)
     game.save()
+    for i in range(5):
+        k = "player%d" % i
+        v = request.POST[k]
+        if v != '':
+            player_id = int(v)
+            gp = GamePlayer(player_id=player_id, game_id=game.pk, order=i)
+            gp.save()
+            #TODO: handle invalid player id
     return HttpResponseRedirect(reverse('scores:game', args={game.pk}))
 
 class NewGameView(generic.FormView):
