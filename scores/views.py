@@ -55,6 +55,12 @@ def next_turn(request, game_id):
     game.add_turn()
     return HttpResponseRedirect(reverse('scores:game', args=(game.pk,)))
 
+def post_to_int(request, field_name):
+    try:
+        return int(request.POST[field_name])
+    except ValueError:
+        return 0
+
 def add_turn_score(request, game_id):
     # TODO handle noninteger values for tiles and coats_of_arms
     game = Game.objects.get(pk=game_id)
@@ -62,24 +68,36 @@ def add_turn_score(request, game_id):
     if 'add_monastery_score' in request.POST:
         game.score_completed_monastery(player_id)
     elif 'add_road_score' in request.POST:
-        game.score_completed_road(player_id, request.POST['tiles'])
+        game.score_completed_road(player_id, post_to_int(request, 'tiles'))
     elif 'add_city_score' in request.POST:
-        game.score_completed_city(player_id, request.POST['tiles'],
-                request.POST['coats_of_arms'])
+        game.score_completed_city(
+            player_id,
+            post_to_int(request, 'tiles'),
+            post_to_int(request, 'coats_of_arms')
+        )
     return HttpResponseRedirect(reverse('scores:game', args=(game.pk,)))
 
 def add_final_score(request, game_id):
     game = Game.objects.get(pk=game_id)
     player_id = request.POST['player']
     if 'add_final_monastery_score' in request.POST:
-        game.score_incomplete_monastery(player_id, request.POST['tiles'])
+        game.score_incomplete_monastery(
+            player_id, post_to_int(request, 'tiles')
+        )
     elif 'add_final_road_score' in request.POST:
-        game.score_incomplete_road(player_id, request.POST['tiles'])
+        game.score_incomplete_road(
+            player_id, post_to_int(request, 'tiles')
+        )
     elif 'add_final_city_score' in request.POST:
         game.score_incomplete_city(
             player_id,
-            request.POST['tiles'],
-            request.POST['coats_of_arms']
+            post_to_int(request, 'tiles'),
+            post_to_int(request, 'coats_of_arms')
+        )
+    elif 'add_final_field_score' in request.POST:
+        game.score_field(
+            player_id,
+            post_to_int(request, 'cities')
         )
     return HttpResponseRedirect(reverse('scores:game', args=(game.pk,)))
 

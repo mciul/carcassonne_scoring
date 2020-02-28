@@ -104,6 +104,13 @@ class Game(models.Model):
             points=int(tiles) + int(coats_of_arms)
         )
 
+    def score_field(self, player_id, cities):
+        return self.final_scores.create(
+            event='field',
+            player_id=player_id,
+            points=int(cities) * 3
+        )
+
     def total_scores(self):
         return [ [p, self.total_score(p)] for p in self.player_order() ]
 

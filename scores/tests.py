@@ -717,7 +717,7 @@ class AddFinalScoreTests(TestCase):
         s = g.final_scores.get(player_id=harold.pk)
         self.assertEqual(s.points, 7)
 
-    def test_add_road_score(self):
+    def test_add_final_road_score(self):
         harold = Player(name='Harold')
         harold.save()
         maude = Player(name='Maude')
@@ -740,7 +740,7 @@ class AddFinalScoreTests(TestCase):
         s = g.final_scores.get(player_id=maude.pk)
         self.assertEqual(s.points, 12)
 
-    def test_add_city_score(self):
+    def test_add_final_city_score(self):
         harold = Player(name='Harold')
         harold.save()
         maude = Player(name='Maude')
@@ -763,3 +763,27 @@ class AddFinalScoreTests(TestCase):
         )
         s = g.final_scores.get(player_id=maude.pk)
         self.assertEqual(s.points, 7)
+
+    def test_add_final_field_score(self):
+        harold = Player(name='Harold')
+        harold.save()
+        maude = Player(name='Maude')
+        maude.save()
+        g = Game(name='Movie Night')
+        g.save()
+        g.add_player(harold.pk)
+        g.add_player(maude.pk)
+        g.add_turn()
+        g.ended = True
+        g.save()
+        response = self.client.post(
+            reverse('scores:add_final_score', args=[g.pk,]),
+            data={
+                'add_final_field_score': "Final City",
+                'player': str(maude.pk),
+                'cities': "4",
+            }
+        )
+        s = g.final_scores.get(player_id=maude.pk)
+        self.assertEqual(s.points, 12)
+
