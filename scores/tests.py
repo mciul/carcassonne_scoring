@@ -88,6 +88,20 @@ class GameModelTests(TestCase):
         expected = g.turn_set.get(number=3)
         self.assertEqual(got, expected)
 
+    def test_current_turn_returns_last_turn_added(self):
+        g = Game(name='test')
+        g.save()
+        p1 = Player(name='Fonz')
+        p1.save()
+        g.add_player(p1.pk)
+        p2 = Player(name='Mork')
+        p2.save()
+        g.add_player(p2.pk)
+        expected = g.add_turn()
+        self.assertEqual(g.current_turn(), expected)
+
+    # TODO: test behavior when there are no turns
+
     def test_turn_number_is_minus_one_with_no_turns(self):
         g = Game(name='test')
         self.assertEqual(g.turn_number(), -1)
@@ -370,3 +384,25 @@ class NextTurnTests(TestCase):
             reverse('scores:next_turn', args=[g.pk,]),
         )
         self.assertEqual(g.turn_number(), 1)
+
+class AddTurnScoreTests(TestCase):
+    def test_add_monastery_score(self):
+        harold = Player(name='Harold')
+        harold.save()
+        maude = Player(name='Maude')
+        maude.save()
+        g = Game(name='Movie Night')
+        g.save()
+        g.add_player(harold.pk)
+        g.add_player(maude.pk)
+        g.add_turn()
+        response = self.client.post(
+            reverse('scores:add_turn_score', args=[g.pk,]),
+            data={
+                'add_monastery_score': "Completed Monastery",
+                'player': str(harold.pk)
+            }
+        )
+        s = g.current_turn().scores.get(player_id=harold.pk)
+        self.assertEqual(s.points, 9)
+

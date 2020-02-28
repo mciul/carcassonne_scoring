@@ -53,7 +53,26 @@ def create_game(request):
 def next_turn(request, game_id):
     game = Game.objects.get(pk=game_id)
     game.add_turn()
-    return HttpResponseRedirect(reverse('scores:game', args={game.pk}))
+    return HttpResponseRedirect(reverse('scores:game', args=(game.pk,)))
+
+def add_turn_score(request, game_id):
+    game = Game.objects.get(pk=game_id)
+    if 'add_monastery_score' in request.POST:
+        add_monastery_score(request, game)
+    elif 'add_road_score' in request.POST:
+        add_road_score(request, game)
+    elif 'add_city_score' in request.POST:
+        add_city_score(request, game)
+    return HttpResponseRedirect(reverse('scores:game', args=(game.pk,)))
+
+def add_monastery_score(request, game):
+    pid = request.POST['player']
+    return game.current_turn().scores.create(
+        event='monastery',
+        player_id=pid,
+        points=9
+    )
+
 
 class NewGameView(generic.FormView):
     template_name = 'scores/start_game.html'

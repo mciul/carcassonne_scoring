@@ -53,6 +53,10 @@ class Game(models.Model):
             number = self.turn_number() + 1
         )
 
+    def current_turn(self):
+        #TODO: handle the case when there are no turns
+        return self.turn_set.order_by('number').reverse()[0]
+
 class Turn(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
