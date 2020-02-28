@@ -60,20 +60,49 @@ class GameModelTests(TestCase):
         g.add_player(p0.pk)
         self.assertEqual(len(g.player_order()), 1)
 
-    def test_turn_number_is_zero_with_no_turns(self):
+    def test_add_turn_returns_turn_zero_first_time(self):
         g = Game(name='test')
-        self.assertEqual(g.turn_number(), 0)
+        g.save()
+        p1 = Player(name='Fonz')
+        p1.save()
+        g.add_player(p1.pk)
+        p2 = Player(name='Mork')
+        p2.save()
+        g.add_player(p2.pk)
+        got = g.add_turn()
+        expected = g.turn_set.get(number=0)
+        self.assertEqual(got, expected)
 
-    def test_turn_number_is_last_turn_number_plus_one(self):
+    def test_add_turn_returns_turn_three_fourth_time(self):
+        g = Game(name='test')
+        g.save()
+        p1 = Player(name='Fonz')
+        p1.save()
+        g.add_player(p1.pk)
+        p2 = Player(name='Mork')
+        p2.save()
+        g.add_player(p2.pk)
+        for i in range(3):
+            g.add_turn()
+        got = g.add_turn()
+        expected = g.turn_set.get(number=3)
+        self.assertEqual(got, expected)
+
+    def test_turn_number_is_minus_one_with_no_turns(self):
+        g = Game(name='test')
+        self.assertEqual(g.turn_number(), -1)
+
+    def test_turn_number_is_last_turn_number(self):
         g = Game(name='test')
         g.save()
         p = Player(name='Winston')
         p.save()
         g.add_player(p.pk)
         t = g.turn_set.create(number=41, player=p)
-        self.assertEqual(g.turn_number(), 42)
+        g.turn_set.create(number=12, player=p)
+        self.assertEqual(g.turn_number(), 41)
 
-    def test_current_player_is_first_player_on_turn_zero(self):
+    def test_current_player_is_first_player_on_first_turn(self):
         g = Game(name='x')
         g.save()
         p1 = Player(name='Scott')
@@ -85,9 +114,10 @@ class GameModelTests(TestCase):
         p3 = Player(name='Charles')
         p3.save()
         g.add_player(p3.pk)
+        g.add_turn()
         self.assertEqual(g.current_player(), p1)
 
-    def test_current_player_is_third_turn_five_three_players(self):
+    def test_current_player_is_third_three_players_sixth_turn(self):
         g = Game(name='x')
         g.save()
         p1 = Player(name='Scott')
@@ -99,14 +129,40 @@ class GameModelTests(TestCase):
         p3 = Player(name='Charles')
         p3.save()
         g.add_player(p3.pk)
-        t = g.turn_set.create(number=4, player=p2)
+        for i in range(6):
+            g.add_turn()
         self.assertEqual(g.current_player(), p3)
 
+    def test_next_player_is_second_player_on_first_turn(self):
+        g = Game(name='x')
+        g.save()
+        p1 = Player(name='Scott')
+        p1.save()
+        g.add_player(p1.pk)
+        p2 = Player(name='Jean')
+        p2.save()
+        g.add_player(p2.pk)
+        p3 = Player(name='Charles')
+        p3.save()
+        g.add_player(p3.pk)
+        g.add_turn()
+        self.assertEqual(g.next_player(), p2)
 
 class TurnModelTests(TestCase):
     def test_turn_number(self):
         t = Turn(number=1)
         self.assertIs(t.number, 1)
+
+    def test_turn_str(self):
+        g = Game()
+        g.save()
+        p = Player()
+        p.save()
+        t = Turn(number=1, game_id=g.pk, player_id=p.pk)
+        expected = "number=1, game_id=%d, player_id=%d" % (
+            g.pk, p.pk
+        )
+        self.assertEqual(t.__str__(), expected)
 
 class GamePlayerTests(TestCase):
     def test_game_player_order(self):
@@ -161,7 +217,7 @@ class GameViewTests(TestCase):
         p = Player(name='Arthur')
         p.save()
         g.add_player(p.pk)
-        t = g.turn_set.create(number=41, player=p)
+        t = g.turn_set.create(number=42, player=p)
         response = self.client.get(reverse("scores:game", args=(g.pk,)))
         self.assertContains(response, "Turn 42")
 
