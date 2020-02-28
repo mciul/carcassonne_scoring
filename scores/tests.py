@@ -81,6 +81,23 @@ class GameViewTests(TestCase):
         response = self.client.get(reverse("scores:game", args=(g.id,)))
         self.assertEqual(response.status_code, 200)
 
+    def test_game_detail_lists_players(self):
+        john = Player(name="John")
+        john.save()
+        paul = Player(name="Paul")
+        paul.save()
+        george = Player(name="George")
+        george.save()
+        ringo = Player(name="Ringo")
+        ringo.save()
+        g = Game(name='Beat Night')
+        g.save()
+        for i, p in enumerate([john, paul, george, ringo]):
+            gp = GamePlayer(player_id=p.pk, game_id=g.pk, order=i)
+            gp.save()
+        response = self.client.get(reverse("scores:game", args=(g.pk,)))
+        self.assertContains(response, "John, Paul, George, Ringo")
+
 class PlayerListViewTests(TestCase):
     def test_player_list_exists(self):
         response = self.client.get(reverse("scores:player_list"))
