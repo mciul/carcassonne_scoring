@@ -1,6 +1,7 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views import generic
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django import forms
 from django.forms import ModelChoiceField
 
@@ -34,7 +35,9 @@ class StartGameForm(forms.Form):
     #TODO: prevent duplicate players
 
 def create_game(request):
-    pass
+    game = Game()
+    game.save()
+    return HttpResponseRedirect(reverse('scores:game', args={game.pk}))
 
 class NewGameView(generic.FormView):
     template_name = 'scores/start_game.html'
