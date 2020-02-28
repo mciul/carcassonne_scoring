@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from .models import Player, Score, Game, Turn, GamePlayer
+from .views import StartGameForm
 
 class PlayerModelTests(TestCase):
     def test_player_name(self):
@@ -102,3 +103,17 @@ class NewGameViewTests(TestCase):
     def test_new_game_view_exists(self):
         response = self.client.get(reverse('scores:start_game'))
         self.assertEqual(response.status_code, 200)
+
+class StartGameFormTests(TestCase):
+    def test_start_two_player_game(self):
+        harold = Player(name='Harold')
+        harold.save()
+        maude = Player(name='Maude')
+        maude.save()
+        form = StartGameForm({
+            'name': 'Movie Night',
+            'player0': harold.pk,
+            'player1': maude.pk,
+        })
+        self.assertEqual(form.errors, {})
+

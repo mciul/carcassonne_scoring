@@ -24,9 +24,12 @@ class StartGameForm(forms.Form):
     name = forms.CharField()
     player0 = ModelChoiceField(queryset=Player.objects.all())
     player1 = ModelChoiceField(queryset=Player.objects.all())
-    player2 = ModelChoiceField(queryset=Player.objects.all())
-    player3 = ModelChoiceField(queryset=Player.objects.all())
-    player4 = ModelChoiceField(queryset=Player.objects.all())
+    player2 = ModelChoiceField(required=False, queryset=Player.objects.all())
+    player3 = ModelChoiceField(required=False, queryset=Player.objects.all())
+    player4 = ModelChoiceField(required=False, queryset=Player.objects.all())
+
+def create_game(request):
+    pass
 
 class NewGameView(generic.FormView):
     template_name = 'scores/start_game.html'
