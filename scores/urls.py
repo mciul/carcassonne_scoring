@@ -18,4 +18,9 @@ urlpatterns = [
         views.add_turn_score,
         name='add_turn_score'
     ),
+    path(
+        'game/<int:game_id>add_final_score',
+        views.add_final_score,
+        name='add_final_score'
+    ),
 ]

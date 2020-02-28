@@ -58,7 +58,6 @@ def next_turn(request, game_id):
 def add_turn_score(request, game_id):
     # TODO handle noninteger values for tiles and coats_of_arms
     game = Game.objects.get(pk=game_id)
-    turn = game.current_turn()
     player_id = request.POST['player']
     if 'add_monastery_score' in request.POST:
         game.score_completed_monastery(player_id)
@@ -67,6 +66,21 @@ def add_turn_score(request, game_id):
     elif 'add_city_score' in request.POST:
         game.score_completed_city(player_id, request.POST['tiles'],
                 request.POST['coats_of_arms'])
+    return HttpResponseRedirect(reverse('scores:game', args=(game.pk,)))
+
+def add_final_score(request, game_id):
+    game = Game.objects.get(pk=game_id)
+    player_id = request.POST['player']
+    if 'add_final_monastery_score' in request.POST:
+        game.score_incomplete_monastery(player_id, request.POST['tiles'])
+    elif 'add_final_road_score' in request.POST:
+        game.score_incomplete_road(player_id, request.POST['tiles'])
+    elif 'add_final_city_score' in request.POST:
+        game.score_incomplete_city(
+            player_id,
+            request.POST['tiles'],
+            request.POST['coats_of_arms']
+        )
     return HttpResponseRedirect(reverse('scores:game', args=(game.pk,)))
 
 def end_game(request, game_id):

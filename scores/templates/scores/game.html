@@ -9,6 +9,38 @@
     {% endfor %}
     {% if game.is_ended %}
       <h2>The game has ended.</h2>
+      <h3>Add A Final Score</h3>
+      <form method="post" action="{% url 'scores:add_final_score' game.id %}">
+        {% csrf_token %}
+        <p>
+          <label for="id_scoring_player">Scoring Player:</label>
+          <select name="player" required id="id_scoring_player">
+          {% for p in game.player_order %}
+            <option value="{{ p.pk }}">{{ p.name }}</option>
+          {% endfor %}
+          </select>
+        </p>
+        <p>
+          <label for="id_tiles">
+            Tiles scored (for cities, roads, and monasteries)
+          </label>
+          <input type="text" name="tiles" size="2" id="id_tiles" />
+        </p>
+        <input type="submit" name="add_final_monastery_score"
+                            value="Final Monastery"/>
+        <p>
+        <input type="submit" name="add_final_road_score" value="Final Road" />
+        <p>
+          <label for="id_coa">Coats of arms scored (for cities)</label>
+          <input type="text" name="coats_of_arms" size="2" id="id_coa" />
+        </p>
+        <input type="submit" name="add_final_city_score" value="Final City" />
+        <p>
+          <label for="id_adjc">Adjacent Cities (for fields)</label>
+          <input type="text" name="adjacent_cities" size="2" id="id_adjc" />
+        </p>
+        <input type="submit" name="add_final_field_score" value="Final Field" />
+      </form>
     {% else %}
       <h2>Turn {{ game.turn_number }} - {{ game.current_player }}'s turn</h2>
 

@@ -69,8 +69,22 @@ class Game(models.Model):
             points=9
         )
 
+    def score_incomplete_monastery(self, player_id, tiles):
+        return self.final_scores.create(
+            event='monastery',
+            player_id=player_id,
+            points=int(tiles)
+        )
+
     def score_completed_road(self, player_id, tiles):
         return self.current_turn().scores.create(
+            event='road',
+            player_id=player_id,
+            points=int(tiles)
+        )
+
+    def score_incomplete_road(self, player_id, tiles):
+        return self.final_scores.create(
             event='road',
             player_id=player_id,
             points=int(tiles)
@@ -81,6 +95,13 @@ class Game(models.Model):
             event='city',
             player_id=player_id,
             points=(int(tiles) + int(coats_of_arms))*2
+        )
+
+    def score_incomplete_city(self, player_id, tiles, coats_of_arms):
+        return self.final_scores.create(
+            event='city',
+            player_id=player_id,
+            points=int(tiles) + int(coats_of_arms)
         )
 
     def total_scores(self):

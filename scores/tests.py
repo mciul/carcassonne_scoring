@@ -211,6 +211,36 @@ class GameModelTests(TestCase):
         s = t.scores.get(player_id=p1.pk)
         self.assertEqual(s.points, 10)
 
+    def test_score_incomplete_monastery_creates_score(self):
+        g = Game(name='x')
+        g.save()
+        p1 = Player(name='Scott')
+        p1.save()
+        g.add_player(p1.pk)
+        g.score_incomplete_monastery(p1.pk, 6)
+        s = g.final_scores.get(player_id=p1.pk)
+        self.assertEqual(s.points, 6)
+
+    def test_score_incomplete_city_creates_score(self):
+        g = Game(name='x')
+        g.save()
+        p1 = Player(name='Charles')
+        p1.save()
+        g.add_player(p1.pk)
+        g.score_incomplete_city(p1.pk, 4, 1)
+        s = g.final_scores.get(player_id=p1.pk)
+        self.assertEqual(s.points, 5)
+
+    def test_score_incomplete_road_creates_score(self):
+        g = Game(name='x')
+        g.save()
+        p1 = Player(name='Jean')
+        p1.save()
+        g.add_player(p1.pk)
+        g.score_incomplete_road(p1.pk, 5)
+        s = g.final_scores.get(player_id=p1.pk)
+        self.assertEqual(s.points, 5)
+
     def test_total_scores_after_one_turn(self):
         g = Game(name='x')
         g.save()
@@ -413,7 +443,7 @@ class GameViewTests(TestCase):
         g.save()
         response = self.client.get(reverse("scores:game", args=(g.pk,)))
         expected = reverse('scores:add_turn_score', args=(g.pk,))
-        self.assertContains('The game has ended', expected)
+        self.assertContains(response, 'The game has ended')
 
 class PlayerListViewTests(TestCase):
     def test_player_list_exists(self):
@@ -637,3 +667,74 @@ class AddTurnScoreTests(TestCase):
         )
         s = g.current_turn().scores.get(player_id=maude.pk)
         self.assertEqual(s.points, 8)
+
+class AddFinalScoreTests(TestCase):
+    def test_add_final_monastery_score(self):
+        harold = Player(name='Harold')
+        harold.save()
+        maude = Player(name='Maude')
+        maude.save()
+        g = Game(name='Movie Night')
+        g.save()
+        g.add_player(harold.pk)
+        g.add_player(maude.pk)
+        g.add_turn()
+        g.ended = True
+        g.save()
+        response = self.client.post(
+            reverse('scores:add_final_score', args=[g.pk,]),
+            data={
+                'add_final_monastery_score': "Final Monastery",
+                'player': str(harold.pk),
+                'tiles': 7,
+            }
+        )
+        s = g.final_scores.get(player_id=harold.pk)
+        self.assertEqual(s.points, 7)
+
+    def test_add_road_score(self):
+        harold = Player(name='Harold')
+        harold.save()
+        maude = Player(name='Maude')
+        maude.save()
+        g = Game(name='Movie Night')
+        g.save()
+        g.add_player(harold.pk)
+        g.add_player(maude.pk)
+        g.add_turn()
+        g.ended = True
+        g.save()
+        response = self.client.post(
+            reverse('scores:add_final_score', args=[g.pk,]),
+            data={
+                'add_final_road_score': "Final Road",
+                'player': str(maude.pk),
+                'tiles': "12",
+            }
+        )
+        s = g.final_scores.get(player_id=maude.pk)
+        self.assertEqual(s.points, 12)
+
+    def test_add_city_score(self):
+        harold = Player(name='Harold')
+        harold.save()
+        maude = Player(name='Maude')
+        maude.save()
+        g = Game(name='Movie Night')
+        g.save()
+        g.add_player(harold.pk)
+        g.add_player(maude.pk)
+        g.add_turn()
+        g.ended = True
+        g.save()
+        response = self.client.post(
+            reverse('scores:add_final_score', args=[g.pk,]),
+            data={
+                'add_final_city_score': "Final City",
+                'player': str(maude.pk),
+                'tiles': "5",
+                'coats_of_arms': "2",
+            }
+        )
+        s = g.final_scores.get(player_id=maude.pk)
+        self.assertEqual(s.points, 7)
