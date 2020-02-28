@@ -406,3 +406,23 @@ class AddTurnScoreTests(TestCase):
         s = g.current_turn().scores.get(player_id=harold.pk)
         self.assertEqual(s.points, 9)
 
+    def test_add_road_score(self):
+        harold = Player(name='Harold')
+        harold.save()
+        maude = Player(name='Maude')
+        maude.save()
+        g = Game(name='Movie Night')
+        g.save()
+        g.add_player(harold.pk)
+        g.add_player(maude.pk)
+        g.add_turn()
+        response = self.client.post(
+            reverse('scores:add_turn_score', args=[g.pk,]),
+            data={
+                'add_road_score': "Completed Road",
+                'player': str(maude.pk),
+                'tiles': "2",
+            }
+        )
+        s = g.current_turn().scores.get(player_id=maude.pk)
+        self.assertEqual(s.points, 2)
