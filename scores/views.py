@@ -69,6 +69,12 @@ def add_turn_score(request, game_id):
                 request.POST['coats_of_arms'])
     return HttpResponseRedirect(reverse('scores:game', args=(game.pk,)))
 
+def end_game(request, game_id):
+    game = Game.objects.get(pk=game_id)
+    game.ended = True
+    game.save()
+    return HttpResponseRedirect(reverse('scores:game', args=(game.pk,)))
+
 class NewGameView(generic.FormView):
     template_name = 'scores/start_game.html'
     form_class = StartGameForm

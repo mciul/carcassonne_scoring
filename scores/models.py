@@ -14,6 +14,7 @@ class Score(models.Model):
 class Game(models.Model):
     name = models.CharField(max_length=200)
     final_scores = models.ManyToManyField(Score, blank=True)
+    ended = models.BooleanField(default=False)
 
     def player_order(self):
         gps = self.gameplayer_set.order_by('order')
@@ -52,6 +53,9 @@ class Game(models.Model):
             player_id = self.next_player().pk,
             number = self.turn_number() + 1
         )
+
+    def is_ended(self):
+        return self.ended
 
     def current_turn(self):
         #TODO: handle the case when there are no turns

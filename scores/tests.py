@@ -251,6 +251,25 @@ class GameModelTests(TestCase):
         expected = [[p1, 13], [p2, 14], [p3, 11]]
         self.assertEqual(g.total_scores(), expected)
 
+    def test_is_ended_is_false_during_game(self):
+        g = Game(name='x')
+        g.save()
+        p1 = Player(name='Scott')
+        p1.save()
+        g.add_player(p1.pk)
+        g.add_turn()
+        self.assertFalse(g.is_ended())
+
+    def test_is_ended_is_true_after_game(self):
+        g = Game(name='x')
+        g.save()
+        p1 = Player(name='Scott')
+        p1.save()
+        g.add_player(p1.pk)
+        g.add_turn()
+        g.ended = True
+        self.assertTrue(g.is_ended())
+
 
 class TurnModelTests(TestCase):
 
@@ -475,6 +494,35 @@ class NextTurnTests(TestCase):
             reverse('scores:next_turn', args=[g.pk,]),
         )
         self.assertEqual(g.turn_number(), 1)
+
+class EndGameTests(TestCase):
+    def test_end_game_redirects_to_game_detail(self):
+        harold = Player(name='Harold')
+        harold.save()
+        maude = Player(name='Maude')
+        maude.save()
+        g = Game(name='Movie Night')
+        g.save()
+        g.add_player(harold.pk)
+        g.add_player(maude.pk)
+        g.add_turn()
+        response = self.client.post(reverse('scores:end_game', args=[g.pk,]))
+        self.assertRedirects(response, reverse('scores:game', args=[g.pk,]))
+
+    def test_end_game_ends_game(self):
+        harold = Player(name='Harold')
+        harold.save()
+        maude = Player(name='Maude')
+        maude.save()
+        g = Game(name='Movie Night')
+        g.save()
+        g.add_player(harold.pk)
+        g.add_player(maude.pk)
+        g.add_turn()
+        response = self.client.post(
+            reverse('scores:end_game', args=[g.pk,]),
+        )
+        self.assertTrue(Game.objects.get(pk=g.pk).is_ended())
 
 class AddTurnScoreTests(TestCase):
     def test_add_monastery_score(self):
