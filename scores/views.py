@@ -33,6 +33,7 @@ class StartGameForm(forms.Form):
     player4 = ModelChoiceField(label = "Fifth Player", queryset=players,
             required=False)
     #TODO: prevent duplicate players
+    #TODO: force game name to be unique
 
 def create_game(request):
     name = request.POST['name']
