@@ -26,6 +26,10 @@ class Game(models.Model):
         else:
             return turns.reverse()[0].number + 1
 
+    def current_player(self):
+        players = self.player_order()
+        return players[self.turn_number() % len(players)]
+
     def add_player(self, player_id):
         player_count = GamePlayer.objects.filter(game_id = self.pk).count()
         gp = GamePlayer(

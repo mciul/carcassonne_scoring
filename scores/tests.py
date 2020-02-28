@@ -62,6 +62,20 @@ class GameModelTests(TestCase):
         t = g.turn_set.create(number=41, player=p)
         self.assertEqual(g.turn_number(), 42)
 
+    def test_current_player_is_first_player_on_turn_zero(self):
+        g = Game(name='x')
+        g.save()
+        p1 = Player(name='Scott')
+        p1.save()
+        g.add_player(p1.pk)
+        p2 = Player(name='Jean')
+        p2.save()
+        g.add_player(p2.pk)
+        p3 = Player(name='Charles')
+        p3.save()
+        g.add_player(p3.pk)
+        self.assertEqual(g.current_player(), p1)
+
 class TurnModelTests(TestCase):
     def test_turn_number(self):
         t = Turn(number=1)
