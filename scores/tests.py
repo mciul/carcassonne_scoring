@@ -8,6 +8,10 @@ class PlayerModelTests(TestCase):
         p = Player(name="Wil")
         self.assertIs(p.name, "Wil")
 
+    def test_player_str(self):
+        p = Player(name='Ryan')
+        self.assertEquals(p.__str__(), 'Ryan')
+
 class ScoreModelTests(TestCase):
     def test_score_player(self):
         p = Player(name="Felicia")
