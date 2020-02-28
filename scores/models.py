@@ -19,6 +19,9 @@ class Game(models.Model):
         gps = self.gameplayer_set.order_by('order')
         return [ gp.player for gp in gps ]
 
+    def turn_number(self):
+        return 0
+
 class Turn(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)

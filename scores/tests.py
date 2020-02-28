@@ -49,6 +49,10 @@ class GameModelTests(TestCase):
         gp2.save()
         self.assertEqual(g.player_order(), [p0, p1, p2])
 
+    def test_turn_number_is_zero_with_no_turns(self):
+        g = Game(name='test')
+        self.assertEqual(g.turn_number(), 0)
+
 class TurnModelTests(TestCase):
     def test_turn_number(self):
         t = Turn(number=1)
