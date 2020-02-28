@@ -230,6 +230,17 @@ class GameViewTests(TestCase):
         response = self.client.get(reverse("scores:game", args=(g.pk,)))
         self.assertContains(response, "Arthur's turn")
 
+    def test_game_detail_has_next_turn_button(self):
+        g = Game(name='test')
+        g.save()
+        p = Player(name='Arthur')
+        p.save()
+        g.add_player(p.pk)
+        response = self.client.get(reverse("scores:game", args=(g.pk,)))
+        expected = '<input type="submit" value="Next Turn">'
+        self.assertContains(response, expected, html=True)
+
+
 class PlayerListViewTests(TestCase):
     def test_player_list_exists(self):
         response = self.client.get(reverse("scores:player_list"))
@@ -265,6 +276,7 @@ class StartGameFormTests(TestCase):
             'player1': maude.pk,
         })
         self.assertTrue(form.is_valid())
+
 
 class CreateGameTests(TestCase):
     def test_create_two_player_game_redirects(self):
@@ -302,7 +314,7 @@ class CreateGameTests(TestCase):
             }
         )
         game = Game.objects.get(name='Comedy Night')
-        self.assertRedirects(response, reverse('scores:game', args={game.pk}))
+        self.assertRedirects(response, reverse('scores:game', args=(game.pk,)))
 
     def test_create_two_player_game_orders_players(self):
         stan = Player(name='Stan')
@@ -343,3 +355,18 @@ class CreateGameTests(TestCase):
         game = Game.objects.get(name='Comedy Night')
         self.assertEqual(game.turn_number(), 0)
 
+class NextTurnTests(TestCase):
+    def test_next_turn_adds_turn(self):
+        harold = Player(name='Harold')
+        harold.save()
+        maude = Player(name='Maude')
+        maude.save()
+        g = Game(name='Movie Night')
+        g.save()
+        g.add_player(harold.pk)
+        g.add_player(maude.pk)
+        g.add_turn()
+        response = self.client.post(
+            reverse('scores:next_turn', args=[g.pk,]),
+        )
+        self.assertEqual(g.turn_number(), 1)

@@ -4,5 +4,8 @@
     <h1>{{ game.name }}</h1>
     <p>Players: {{ game.player_order|join:", " }}</p>
     <h2>Turn {{ game.turn_number }} - {{ game.current_player }}'s turn</h2>
+    <form method="post" action="{% url 'scores:next_turn' game.id %}">
+      <input type="submit" value="Next Turn">
+    </form>
   </body>
 </html>

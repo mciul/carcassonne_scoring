@@ -50,6 +50,11 @@ def create_game(request):
     game.add_turn()
     return HttpResponseRedirect(reverse('scores:game', args={game.pk}))
 
+def next_turn(request, game_id):
+    game = Game.objects.get(pk=game_id)
+    game.add_turn()
+    return HttpResponseRedirect(reverse('scores:game', args={game.pk}))
+
 class NewGameView(generic.FormView):
     template_name = 'scores/start_game.html'
     form_class = StartGameForm
