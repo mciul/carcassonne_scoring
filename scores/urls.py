@@ -9,4 +9,5 @@ urlpatterns = [
     path('game/<int:pk>/', views.GameView.as_view(), name='game'),
     path('player/', views.PlayerListView.as_view(), name='player_list'),
     path('player/<int:pk>/', views.PlayerView.as_view(), name='player'),
+    path('start_game', views.NewGameView.as_view(), name='start_game'),
 ]

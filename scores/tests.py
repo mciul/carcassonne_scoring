@@ -81,9 +81,20 @@ class PlayerListViewTests(TestCase):
         response = self.client.get(reverse("scores:player_list"))
         self.assertEqual(response.status_code, 200)
 
+    def test_player_list_with_a_player(self):
+        p = Player(name="Jupiter")
+        p.save()
+        response = self.client.get(reverse('scores:player_list'))
+        self.assertContains(response, 'Jupiter')
+
 class PlayerViewTests(TestCase):
     def test_player_view_exists(self):
         p = Player(name='Seth')
         p.save()
         response = self.client.get(reverse("scores:player", args=(p.id,)))
+        self.assertEqual(response.status_code, 200)
+
+class NewGameViewTests(TestCase):
+    def test_new_game_view_exists(self):
+        response = self.client.get(reverse('scores:start_game'))
         self.assertEqual(response.status_code, 200)
