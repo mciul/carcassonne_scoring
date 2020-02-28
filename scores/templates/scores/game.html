@@ -8,7 +8,6 @@
     <p>{{ p.name }}: {{ s }}</p>
     {% endfor %}
     <h2>Turn {{ game.turn_number }} - {{ game.current_player }}'s turn</h2>
-    <h3>Scored this Turn</h3>
 
     <h3>Add A Score</h3>
     <form method="post" action="{% url 'scores:add_turn_score' game.id %}">
@@ -25,12 +24,12 @@
                            value="Completed Monastery"/>
       <p>
         <label for="id_tiles">Tiles scored (for cities and roads)</label>
-        <input type="text" size="2" id="id_tiles" />
+        <input type="text" name="tiles" size="2" id="id_tiles" />
       </p>
       <input type="submit" name="add_road_score" value="Completed Road">
       <p>
         <label for="id_coa">Coats of arms scored (for cities)</label>
-        <input type="text" size="2" id="id_coa" />
+        <input type="text" name="coats_of_arms" size="2" id="id_coa" />
       </p>
       <input type="submit" name="add_city_score" value="Completed City">
     </form>
