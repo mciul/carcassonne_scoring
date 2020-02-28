@@ -22,11 +22,16 @@ class GameView(generic.DetailView):
 
 class StartGameForm(forms.Form):
     name = forms.CharField()
-    player0 = ModelChoiceField(queryset=Player.objects.all())
-    player1 = ModelChoiceField(queryset=Player.objects.all())
-    player2 = ModelChoiceField(required=False, queryset=Player.objects.all())
-    player3 = ModelChoiceField(required=False, queryset=Player.objects.all())
-    player4 = ModelChoiceField(required=False, queryset=Player.objects.all())
+    players = Player.objects.all()
+    player0 = ModelChoiceField(label = "First Player", queryset=players)
+    player1 = ModelChoiceField(label = "Second Player", queryset=players)
+    player2 = ModelChoiceField(label = "Third Player", queryset=players,
+            required=False)
+    player3 = ModelChoiceField(label = "Fourth Player", queryset=players,
+            required=False)
+    player4 = ModelChoiceField(label = "Fifth Player", queryset=players,
+            required=False)
+    #TODO: prevent duplicate players
 
 def create_game(request):
     pass
