@@ -426,3 +426,25 @@ class AddTurnScoreTests(TestCase):
         )
         s = g.current_turn().scores.get(player_id=maude.pk)
         self.assertEqual(s.points, 2)
+
+    def test_add_city_score(self):
+        harold = Player(name='Harold')
+        harold.save()
+        maude = Player(name='Maude')
+        maude.save()
+        g = Game(name='Movie Night')
+        g.save()
+        g.add_player(harold.pk)
+        g.add_player(maude.pk)
+        g.add_turn()
+        response = self.client.post(
+            reverse('scores:add_turn_score', args=[g.pk,]),
+            data={
+                'add_city_score': "Completed City",
+                'player': str(maude.pk),
+                'tiles': "3",
+                'coats_of_arms': "1",
+            }
+        )
+        s = g.current_turn().scores.get(player_id=maude.pk)
+        self.assertEqual(s.points, 8)

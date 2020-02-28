@@ -64,7 +64,8 @@ def add_turn_score(request, game_id):
     elif 'add_road_score' in request.POST:
         add_road_score(turn, player_id, request.POST['tiles'])
     elif 'add_city_score' in request.POST:
-        add_city_score(request, turn, player_id)
+        add_city_score(turn, player_id, request.POST['tiles'],
+                request.POST['coats_of_arms'])
     return HttpResponseRedirect(reverse('scores:game', args=(game.pk,)))
 
 def add_monastery_score(turn, player_id):
@@ -79,6 +80,13 @@ def add_road_score(turn, player_id, tiles):
         event='road',
         player_id=player_id,
         points=tiles
+    )
+
+def add_city_score(turn, player_id, tiles, coats_of_arms):
+    return turn.scores.create(
+        event='city',
+        player_id=player_id,
+        points=(int(tiles)+int(coats_of_arms))*2,
     )
 
 class NewGameView(generic.FormView):
